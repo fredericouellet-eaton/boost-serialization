@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.0)
+project(boost-serialization-1.66 VERSION 1.0 LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 14)
+
+include(GNUInstallDirs)
+
+if (POLICY CMP0054)
+  cmake_policy (SET CMP0054 NEW)
+endif (POLICY CMP0054)
+
+if (POLICY CMP0063)
+  cmake_policy (SET CMP0063 NEW)
+endif (POLICY CMP0063)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+set(Boost_USE_STATIC_LIBS TRUE)
+
+add_subdirectory(CMake)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/boost/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${CMAKE_PROJECT_NAME} FILES_MATCHING PATTERN "*.hpp")
+
+# Export packages
+install(EXPORT ${CMAKE_PROJECT_NAME}-targets FILE ${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/${CMAKE_PROJECT_NAME}/cmake)
+export(PACKAGE ${CMAKE_PROJECT_NAME})

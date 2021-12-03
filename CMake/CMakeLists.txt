@@ -10,11 +10,6 @@ if (POLICY CMP0063)
   cmake_policy (SET CMP0063 NEW)
 endif (POLICY CMP0063)
 
-if(Boost_USE_STATIC_LIBS)
-  project("Serialization-Static")
-else()
-  project("Serialization-Shared")
-endif()
 
 #
 # Compiler settings
@@ -146,7 +141,7 @@ endif()
 ###########################
 # library builds
 
-add_library(serialization ${LINK_TYPE}
+add_library(boost-serialization-1.66 ${LINK_TYPE}
   ../src/archive_exception.cpp
   ../src/basic_archive.cpp
   ../src/basic_iarchive.cpp
@@ -177,8 +172,16 @@ add_library(serialization ${LINK_TYPE}
   ../src/utf8_codecvt_facet.cpp
   ../src/basic_xml_grammar.ipp # doesn't show up in "Source Files" in Xcode"'
 )
+install(TARGETS boost-serialization-1.66
+		EXPORT ${CMAKE_PROJECT_NAME}-targets
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${CMAKE_PROJECT_NAME}
+		)
+export(TARGETS boost-serialization-1.66 APPEND FILE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake)	
 
-add_library(wserialization  ${LINK_TYPE}
+add_library(boost-wserialization-1.66  ${LINK_TYPE}
   ../src/codecvt_null.cpp
   ../src/basic_text_wiprimitive.cpp
   ../src/basic_text_woprimitive.cpp
@@ -189,6 +192,14 @@ add_library(wserialization  ${LINK_TYPE}
   ../src/xml_wgrammar.cpp
   ../src/basic_xml_grammar.ipp # doesn't show up in "Source Files" in Xcode"'
 )
+install(TARGETS boost-wserialization-1.66
+		EXPORT ${CMAKE_PROJECT_NAME}-targets
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${CMAKE_PROJECT_NAME}
+		)
+export(TARGETS boost-wserialization-1.66 APPEND FILE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake)
 
 # end library build
 ###########################
@@ -196,170 +207,170 @@ add_library(wserialization  ${LINK_TYPE}
 ###########################
 # test targets
 
-function( serialization_test test_name)
-  set(arglist)
-  foreach(a IN ITEMS ${ARGN} )
-    set(arglist ${arglist} ../test/${a}.cpp)
-  endforeach()
-  message(STATUS ${test_name})
-  add_executable( ${test_name} ../test/${test_name}.cpp ${arglist} )
-  target_link_libraries(${test_name} serialization wserialization ${Boost_LIBRARIES})
-  add_test( ${test_name} ${test_name} )
-endfunction(serialization_test)
+# function( serialization_test test_name)
+#   set(arglist)
+#   foreach(a IN ITEMS ${ARGN} )
+#     set(arglist ${arglist} ../test/${a}.cpp)
+#   endforeach()
+#   message(STATUS ${test_name})
+#   add_executable( ${test_name} ../test/${test_name}.cpp ${arglist} )
+#   target_link_libraries(${test_name} serialization wserialization ${Boost_LIBRARIES})
+#   add_test( ${test_name} ${test_name} )
+# endfunction(serialization_test)
 
-function(archive_test test_name)
-  set(arglist)
-  foreach(a IN ITEMS ${ARGN} )
-    set(arglist ${arglist} ../test/${a}.cpp)
-  endforeach()
-  foreach(
-    archive-name
-    IN ITEMS text_archive text_warchive binary_archive xml_archive xml_warchive
-  )
-    set(amended_test_name ${test_name}_${archive-name})
-    message(STATUS ${amended_test_name})
-    add_executable(${amended_test_name} ../test/${test_name}.cpp ${arglist})
-    set_property(
-      TARGET ${amended_test_name}
-      PROPERTY COMPILE_DEFINITIONS BOOST_ARCHIVE_TEST=${archive-name}.hpp
-    )
-    target_link_libraries(${amended_test_name} serialization wserialization ${Boost_LIBRARIES})
-    add_test(${amended_test_name} ${amended_test_name})
-  endforeach()
-endfunction(archive_test)
+# function(archive_test test_name)
+#   set(arglist)
+#   foreach(a IN ITEMS ${ARGN} )
+#     set(arglist ${arglist} ../test/${a}.cpp)
+#   endforeach()
+#   foreach(
+#     archive-name
+#     IN ITEMS text_archive text_warchive binary_archive xml_archive xml_warchive
+#   )
+#     set(amended_test_name ${test_name}_${archive-name})
+#     message(STATUS ${amended_test_name})
+#     add_executable(${amended_test_name} ../test/${test_name}.cpp ${arglist})
+#     set_property(
+#       TARGET ${amended_test_name}
+#       PROPERTY COMPILE_DEFINITIONS BOOST_ARCHIVE_TEST=${archive-name}.hpp
+#     )
+#     target_link_libraries(${amended_test_name} serialization wserialization ${Boost_LIBRARIES})
+#     add_test(${amended_test_name} ${amended_test_name})
+#   endforeach()
+# endfunction(archive_test)
 
-function(polymorphic_archive_test test_name)
-  set(arglist)
-  foreach(a IN ITEMS ${ARGN} )
-    set(arglist ${arglist} ../test/${a}.cpp)
-  endforeach()
-  foreach(
-    archive-name
-    IN ITEMS text_archive text_warchive binary_archive xml_archive xml_warchive
-  )
-    set(amended_test_name ${test_name}_polymorphic_${archive-name})
-    message(STATUS ${amended_test_name})
-    add_executable(${amended_test_name} ../test/${test_name}.cpp ${arglist})
-    set_property(
-      TARGET ${amended_test_name}
-      PROPERTY COMPILE_DEFINITIONS BOOST_ARCHIVE_TEST=polymorphic_${archive-name}.hpp
-    )
-    target_link_libraries(${amended_test_name} serialization wserialization ${Boost_LIBRARIES})
-    add_test(${amended_test_name} ${amended_test_name})
-  endforeach()
-endfunction(polymorphic_archive_test)
+# function(polymorphic_archive_test test_name)
+#   set(arglist)
+#   foreach(a IN ITEMS ${ARGN} )
+#     set(arglist ${arglist} ../test/${a}.cpp)
+#   endforeach()
+#   foreach(
+#     archive-name
+#     IN ITEMS text_archive text_warchive binary_archive xml_archive xml_warchive
+#   )
+#     set(amended_test_name ${test_name}_polymorphic_${archive-name})
+#     message(STATUS ${amended_test_name})
+#     add_executable(${amended_test_name} ../test/${test_name}.cpp ${arglist})
+#     set_property(
+#       TARGET ${amended_test_name}
+#       PROPERTY COMPILE_DEFINITIONS BOOST_ARCHIVE_TEST=polymorphic_${archive-name}.hpp
+#     )
+#     target_link_libraries(${amended_test_name} serialization wserialization ${Boost_LIBRARIES})
+#     add_test(${amended_test_name} ${amended_test_name})
+#   endforeach()
+# endfunction(polymorphic_archive_test)
 
-enable_testing()
+# enable_testing()
 
-serialization_test(test_dll_exported polymorphic_derived2 polymorphic_base)
+# serialization_test(test_dll_exported polymorphic_derived2 polymorphic_base)
 
-# serialization(test_dll_simple dll_a_lib)
-# compile test_dll_plugin.cpp
-# Running the following test requires that the test know the directory 
-# in which the dll is stored. I don't know how to extract this from bjam
-# serialization(test_dll_plugin : : dll_polymorphic_derived2_lib)
+# # serialization(test_dll_simple dll_a_lib)
+# # compile test_dll_plugin.cpp
+# # Running the following test requires that the test know the directory 
+# # in which the dll is stored. I don't know how to extract this from bjam
+# # serialization(test_dll_plugin : : dll_polymorphic_derived2_lib)
 
-serialization_test(test_private_ctor)
-serialization_test(test_reset_object_address A)
-serialization_test(test_void_cast)
-serialization_test(test_mult_archive_types)
-serialization_test(test_iterators)
-serialization_test(test_iterators_base64)
-serialization_test(test_inclusion)
-serialization_test(test_inclusion2)
-serialization_test(test_smart_cast)
-serialization_test(test_codecvt_null ../src/codecvt_null)
-serialization_test(test_strong_typedef)
+# serialization_test(test_private_ctor)
+# serialization_test(test_reset_object_address A)
+# serialization_test(test_void_cast)
+# serialization_test(test_mult_archive_types)
+# serialization_test(test_iterators)
+# serialization_test(test_iterators_base64)
+# serialization_test(test_inclusion)
+# serialization_test(test_inclusion2)
+# serialization_test(test_smart_cast)
+# serialization_test(test_codecvt_null ../src/codecvt_null)
+# serialization_test(test_strong_typedef)
 
-archive_test(test_native_array A)
-archive_test(test_boost_array A)
-if(COMPILER_SUPPORTS_CXX11)
-  archive_test(test_array A)
-endif()
-archive_test(test_binary)
-archive_test(test_bitset)
-archive_test(test_class_info_save)
-archive_test(test_class_info_load)
-archive_test(test_complex)
-archive_test(test_contained_class A)
-archive_test(test_cyclic_ptrs A)
-archive_test(test_delete_pointer)
-archive_test(test_deque A)
-archive_test(test_derived)
-archive_test(test_derived_class A)
-archive_test(test_diamond)
-archive_test(test_diamond_complex)
-archive_test(test_exported polymorphic_base)
-archive_test(test_forward_list A)
-archive_test(test_forward_list_ptrs A)
-archive_test(test_helper_support)
-archive_test(test_interrupts)
-archive_test(test_list A)
-archive_test(test_list_ptrs A)
-archive_test(test_map A)
-archive_test(test_map_boost_unordered A)
-archive_test(test_mi)
-archive_test(test_multiple_ptrs A)
-archive_test(test_multiple_inheritance)
-archive_test(test_no_rtti polymorphic_base polymorphic_derived1)
-archive_test(test_new_operator A)
-archive_test(test_non_intrusive)
-archive_test(test_non_default_ctor)
-archive_test(test_non_default_ctor2)
-archive_test(test_null_ptr)
-archive_test(test_nvp A)
-archive_test(test_object)
-archive_test(test_optional)
-archive_test(test_primitive)
-archive_test(test_priority_queue A)
-archive_test(test_private_base)
-archive_test(test_private_base2)
-archive_test(test_queue A)
-archive_test(test_recursion A)
-archive_test(test_registered)
-archive_test(test_shared_ptr)
-archive_test(test_shared_ptr_multi_base)
-archive_test(test_shared_ptr_132)
-archive_test(test_simple_class A)
-archive_test(test_simple_class_ptr A)
-CHECK_INCLUDE_FILE_CXX(slist SLIST_FOUND)
-if(SLIST_FOUND)
-  message(STATUS "slist header found")
-  archive_test(test_slist A)
-  archive_test(test_slist_ptr A)
-else()
-  message(STATUS "slist header NOT found")
-endif()
-archive_test(test_stack A)
-archive_test(test_split)
-archive_test(test_tracking)
-archive_test(test_unregistered)
-archive_test(test_unique_ptr)
-archive_test(test_valarray)
-archive_test(test_variant A)
-archive_test(test_vector A)
-archive_test(test_set A)
-archive_test(test_set_boost_unordered A)
-if(COMPILER_SUPPORTS_CXX11)
-  archive_test(test_set_unordered A)
-else()
-  CHECK_INCLUDE_FILE_CXX(hash_set HASH_SET_FOUND)
-  if(HASH_SET_FOUND)
-    archive_test(test_set_hashed A)
-  endif()
-endif()
-if(COMPILER_SUPPORTS_CXX11)
-  archive_test(test_map_unordered A)
-else()
-  CHECK_INCLUDE_FILE_CXX(hash_map HASH_MAP_FOUND)
-  if(HASH_MAP_FOUND)
-    archive_test(test_map_hashed A)
-  endif()
-endif()
+# archive_test(test_native_array A)
+# archive_test(test_boost_array A)
+# if(COMPILER_SUPPORTS_CXX11)
+#   archive_test(test_array A)
+# endif()
+# archive_test(test_binary)
+# archive_test(test_bitset)
+# archive_test(test_class_info_save)
+# archive_test(test_class_info_load)
+# archive_test(test_complex)
+# archive_test(test_contained_class A)
+# archive_test(test_cyclic_ptrs A)
+# archive_test(test_delete_pointer)
+# archive_test(test_deque A)
+# archive_test(test_derived)
+# archive_test(test_derived_class A)
+# archive_test(test_diamond)
+# archive_test(test_diamond_complex)
+# archive_test(test_exported polymorphic_base)
+# archive_test(test_forward_list A)
+# archive_test(test_forward_list_ptrs A)
+# archive_test(test_helper_support)
+# archive_test(test_interrupts)
+# archive_test(test_list A)
+# archive_test(test_list_ptrs A)
+# archive_test(test_map A)
+# archive_test(test_map_boost_unordered A)
+# archive_test(test_mi)
+# archive_test(test_multiple_ptrs A)
+# archive_test(test_multiple_inheritance)
+# archive_test(test_no_rtti polymorphic_base polymorphic_derived1)
+# archive_test(test_new_operator A)
+# archive_test(test_non_intrusive)
+# archive_test(test_non_default_ctor)
+# archive_test(test_non_default_ctor2)
+# archive_test(test_null_ptr)
+# archive_test(test_nvp A)
+# archive_test(test_object)
+# archive_test(test_optional)
+# archive_test(test_primitive)
+# archive_test(test_priority_queue A)
+# archive_test(test_private_base)
+# archive_test(test_private_base2)
+# archive_test(test_queue A)
+# archive_test(test_recursion A)
+# archive_test(test_registered)
+# archive_test(test_shared_ptr)
+# archive_test(test_shared_ptr_multi_base)
+# archive_test(test_shared_ptr_132)
+# archive_test(test_simple_class A)
+# archive_test(test_simple_class_ptr A)
+# CHECK_INCLUDE_FILE_CXX(slist SLIST_FOUND)
+# if(SLIST_FOUND)
+#   message(STATUS "slist header found")
+#   archive_test(test_slist A)
+#   archive_test(test_slist_ptr A)
+# else()
+#   message(STATUS "slist header NOT found")
+# endif()
+# archive_test(test_stack A)
+# archive_test(test_split)
+# archive_test(test_tracking)
+# archive_test(test_unregistered)
+# archive_test(test_unique_ptr)
+# archive_test(test_valarray)
+# archive_test(test_variant A)
+# archive_test(test_vector A)
+# archive_test(test_set A)
+# archive_test(test_set_boost_unordered A)
+# if(COMPILER_SUPPORTS_CXX11)
+#   archive_test(test_set_unordered A)
+# else()
+#   CHECK_INCLUDE_FILE_CXX(hash_set HASH_SET_FOUND)
+#   if(HASH_SET_FOUND)
+#     archive_test(test_set_hashed A)
+#   endif()
+# endif()
+# if(COMPILER_SUPPORTS_CXX11)
+#   archive_test(test_map_unordered A)
+# else()
+#   CHECK_INCLUDE_FILE_CXX(hash_map HASH_MAP_FOUND)
+#   if(HASH_MAP_FOUND)
+#     archive_test(test_map_hashed A)
+#   endif()
+# endif()
 
-polymorphic_archive_test(test_polymorphic test_polymorphic_A A)
-polymorphic_archive_test(test_polymorphic2 test_polymorphic2imp)
-polymorphic_archive_test(test_polymorphic_helper)
+# polymorphic_archive_test(test_polymorphic test_polymorphic_A A)
+# polymorphic_archive_test(test_polymorphic2 test_polymorphic2imp)
+# polymorphic_archive_test(test_polymorphic_helper)
 
 # end test targets
 ####################
@@ -426,8 +437,8 @@ set_property(TARGET wserialization_headers PROPERTY FOLDER "wserialization")
 #####################
 # add test project to run misc tests
 
-add_executable( test_z ../test/test_z.cpp)
-target_link_libraries(test_z serialization wserialization ${Boost_LIBRARIES})
+#add_executable( test_z ../test/test_z.cpp)
+#target_link_libraries(test_z serialization wserialization ${Boost_LIBRARIES})
 
 # end test project
 #####################
