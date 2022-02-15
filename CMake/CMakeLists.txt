@@ -172,6 +172,8 @@ add_library(boost-serialization-1.66 ${LINK_TYPE}
   ../src/utf8_codecvt_facet.cpp
   ../src/basic_xml_grammar.ipp # doesn't show up in "Source Files" in Xcode"'
 )
+target_include_directories(boost-serialization-1.66 PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
 install(TARGETS boost-serialization-1.66
 		EXPORT ${CMAKE_PROJECT_NAME}-targets
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -192,6 +194,8 @@ add_library(boost-wserialization-1.66  ${LINK_TYPE}
   ../src/xml_wgrammar.cpp
   ../src/basic_xml_grammar.ipp # doesn't show up in "Source Files" in Xcode"'
 )
+
+target_include_directories(boost-wserialization-1.66 PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 install(TARGETS boost-wserialization-1.66
 		EXPORT ${CMAKE_PROJECT_NAME}-targets
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
